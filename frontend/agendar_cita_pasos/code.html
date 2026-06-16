@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Inter:wght@400;500;600&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Montserrat:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary": "#c8c6c5",
+                    "surface-bright": "#38393a",
+                    "on-background": "#e2e2e2",
+                    "on-primary-fixed-variant": "#574500",
+                    "inverse-on-surface": "#2f3131",
+                    "surface-dim": "#121414",
+                    "primary": "#f2ca50",
+                    "tertiary-fixed": "#e5e2e1",
+                    "on-surface": "#e2e2e2",
+                    "on-tertiary": "#313030",
+                    "primary-container": "#d4af37",
+                    "on-tertiary-container": "#454545",
+                    "outline-variant": "#4d4635",
+                    "primary-fixed": "#ffe088",
+                    "secondary-container": "#474746",
+                    "secondary-fixed": "#e5e2e1",
+                    "outline": "#99907c",
+                    "surface-container-lowest": "#0d0e0f",
+                    "on-secondary": "#303030",
+                    "tertiary-container": "#b5b2b2",
+                    "on-primary": "#3c2f00",
+                    "inverse-primary": "#735c00",
+                    "surface": "#121414",
+                    "inverse-surface": "#e2e2e2",
+                    "surface-variant": "#333535",
+                    "on-primary-container": "#554300",
+                    "surface-container": "#1e2020",
+                    "on-error-container": "#ffdad6",
+                    "secondary-fixed-dim": "#c8c6c5",
+                    "surface-container-low": "#1a1c1c",
+                    "background": "#121414",
+                    "surface-container-high": "#282a2b",
+                    "on-secondary-container": "#b7b5b4",
+                    "on-surface-variant": "#d0c5af",
+                    "on-secondary-fixed": "#1b1b1c",
+                    "tertiary": "#d0cecd",
+                    "error-container": "#93000a",
+                    "on-primary-fixed": "#241a00",
+                    "on-tertiary-fixed-variant": "#474646",
+                    "on-tertiary-fixed": "#1c1b1b",
+                    "primary-fixed-dim": "#e9c349",
+                    "on-error": "#690005",
+                    "error": "#ffb4ab",
+                    "tertiary-fixed-dim": "#c8c6c5",
+                    "surface-tint": "#e9c349"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "lg": "40px",
+                    "container-max": "1280px",
+                    "sm": "12px",
+                    "base": "8px",
+                    "xs": "4px",
+                    "xl": "64px",
+                    "md": "24px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "label-caps": ["Montserrat"],
+                    "body-lg": ["Inter"],
+                    "headline-md": ["Montserrat"],
+                    "display-lg": ["Montserrat"],
+                    "button": ["Montserrat"],
+                    "body-md": ["Inter"],
+                    "display-lg-mobile": ["Montserrat"]
+            },
+            "fontSize": {
+                    "label-caps": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "button": ["14px", {"lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "display-lg-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            user-select: none;
+        }
+        .step-active { color: #f2ca50; }
+        .step-inactive { color: #4d4635; }
+        .service-card-selected { border-color: #f2ca50 !important; background-color: rgba(242, 202, 80, 0.05); }
+        .barber-selected img { border: 3px solid #f2ca50; }
+        .time-slot-selected { background-color: #f2ca50 !important; color: #3c2f00 !important; }
+        ::-webkit-scrollbar { display: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md overflow-x-hidden">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-gutter py-base bg-surface/60 backdrop-blur-xl border-b border-outline-variant/30 shadow-sm">
+<div class="flex items-center gap-4">
+<button class="text-primary"><span class="material-symbols-outlined" data-icon="menu">menu</span></button>
+<h1 class="text-headline-md font-headline-md font-bold text-primary">Tijeras Locas</h1>
+</div>
+<div class="w-10 h-10 rounded-full overflow-hidden border border-primary/30">
+<img alt="Profile" data-alt="A close-up professional portrait of a sophisticated man with a well-groomed beard and stylish modern haircut. He is wearing a dark, high-end tailor-made suit against a blurred studio background with warm, golden accent lighting. The overall mood is prestigious and refined, matching an exclusive barbershop aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKqa0BWO8IMEf5cKCeiXhMCAElyuoqbUj2yCZdpYC616Fq4okwLCLjTCskmHzWfZLp6QjGoiD5qRSwgHCtEgfWIwRDK70IQxfONyNN-cQmDh3so5W2gJPJ5lpo2WfdkouBVVRHQWr6n7y4ObW2RoARbBBtPNNPfYwUIYf2ExwwBcdNml2g0Grod79FxsyDU_H1ifx4ReQZwdZy6k4mWRqDwQHDTsVDxdHMnA6xFod-3mGnrj3ESv5cfNIodEScGdMlg0h0AAP_hPs"/>
+</div>
+</header>
+<main class="flex-1 mt-20 mb-24 px-gutter max-w-lg mx-auto w-full">
+<!-- Progress Indicator -->
+<div class="flex justify-between items-center mb-lg">
+<div class="flex flex-col items-center gap-1">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary font-bold">1</div>
+<span class="text-label-caps font-label-caps text-primary">SERVICIO</span>
+</div>
+<div class="flex-1 h-[2px] bg-outline-variant mx-4 mb-4"></div>
+<div class="flex flex-col items-center gap-1 opacity-50">
+<div class="w-8 h-8 rounded-full border-2 border-outline-variant flex items-center justify-center text-on-surface-variant font-bold">2</div>
+<span class="text-label-caps font-label-caps text-on-surface-variant">BARBERO</span>
+</div>
+<div class="flex-1 h-[2px] bg-outline-variant mx-4 mb-4"></div>
+<div class="flex flex-col items-center gap-1 opacity-50">
+<div class="w-8 h-8 rounded-full border-2 border-outline-variant flex items-center justify-center text-on-surface-variant font-bold">3</div>
+<span class="text-label-caps font-label-caps text-on-surface-variant">FECHA</span>
+</div>
+</div>
+<!-- Section: Selection Logic -->
+<div class="space-y-lg" id="booking-container">
+<!-- Step 1: Services -->
+<section class="animate-in fade-in slide-in-from-bottom-4 duration-500" id="step-1">
+<div class="mb-md">
+<h2 class="text-headline-md font-headline-md text-on-background">Selecciona tu Servicio</h2>
+<p class="text-on-surface-variant text-body-md">Experiencias de barbería de lujo adaptadas a ti.</p>
+</div>
+<div class="space-y-md">
+<!-- Service Card -->
+<div class="service-card group cursor-pointer p-md bg-surface-container border border-outline-variant rounded-xl transition-all hover:border-primary/50 relative overflow-hidden" onclick="selectService(this)">
+<div class="flex justify-between items-start z-10 relative">
+<div>
+<h3 class="font-headline-md text-lg text-primary">Corte de pelo</h3>
+<p class="text-on-surface-variant text-sm mt-1">Corte clásico o moderno con acabado a navaja.</p>
+<p class="text-on-surface font-bold mt-2 text-lg">$20</p>
+</div>
+<span class="material-symbols-outlined text-primary-container group-hover:scale-110 transition-transform" data-icon="content_cut">content_cut</span>
+</div>
+</div>
+<div class="service-card group cursor-pointer p-md bg-surface-container border border-outline-variant rounded-xl transition-all hover:border-primary/50 relative overflow-hidden" onclick="selectService(this)">
+<div class="flex justify-between items-start z-10 relative">
+<div>
+<h3 class="font-headline-md text-lg text-primary">Barba</h3>
+<p class="text-on-surface-variant text-sm mt-1">Perfilado, rebaje y ritual de toalla caliente.</p>
+<p class="text-on-surface font-bold mt-2 text-lg">$15</p>
+</div>
+<span class="material-symbols-outlined text-primary-container group-hover:scale-110 transition-transform" data-icon="face">face</span>
+</div>
+</div>
+<div class="service-card group cursor-pointer p-md bg-surface-container border border-outline-variant rounded-xl transition-all hover:border-primary/50 relative overflow-hidden" onclick="selectService(this)">
+<div class="flex justify-between items-start z-10 relative">
+<div>
+<h3 class="font-headline-md text-lg text-primary">Combo</h3>
+<p class="text-on-surface-variant text-sm mt-1">Corte completo y arreglo de barba premium.</p>
+<p class="text-on-surface font-bold mt-2 text-lg">$30</p>
+</div>
+<span class="material-symbols-outlined text-primary-container group-hover:scale-110 transition-transform" data-icon="stars">stars</span>
+</div>
+<div class="absolute -right-4 -top-4 w-12 h-12 bg-primary/10 rotate-12 flex items-center justify-center pt-4 pl-4">
+<span class="material-symbols-outlined text-primary text-xs" data-icon="verified" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Step 2: Barbers -->
+<section class="hidden animate-in fade-in slide-in-from-right-4 duration-500" id="step-2">
+<div class="mb-md">
+<h2 class="text-headline-md font-headline-md text-on-background">Tu Barbero</h2>
+<p class="text-on-surface-variant text-body-md">Nuestros maestros del detalle.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-md">
+<div class="barber-card flex flex-col items-center gap-2 cursor-pointer group" onclick="selectBarber(this)">
+<div class="w-24 h-24 rounded-full overflow-hidden border-2 border-transparent transition-all group-hover:border-primary/30">
+<img class="w-full h-full object-cover" data-alt="A professional male barber with styled hair and a neatly trimmed beard, looking confident. He is standing in a luxury dark-themed barber shop with antique wooden cabinets and metallic accents in the background. High contrast lighting emphasizes craftsmanship and attention to detail." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDByxWuSgP_JV2XXvjtKXZ0hTMdDTKQwEXENXXzQWsSqd6ORnk2oA2ieR_2jl4eSKnVgmqhPWQFzSrDi4xXthu84uHcO0cbIoqUAj_Z5sWOdM0ufUEXKBIEe1HkiGxF2UnpFRD6_VROQsLqsUXT4znp5hp5QPsRHei9LQzR_J_hR5LJMZF07TCx_ShDVl5mO-KFthob1rIt7AmPq2c4LdHBVCexGbS6XxSYVRVzSEOrYnaffQri48GmhnCTeZc920n5s3m76nF5Ork"/>
+</div>
+<span class="font-headline-md text-sm text-on-surface">Andrés</span>
+<span class="text-xs text-on-surface-variant">Master</span>
+</div>
+<div class="barber-card flex flex-col items-center gap-2 cursor-pointer group" onclick="selectBarber(this)">
+<div class="w-24 h-24 rounded-full overflow-hidden border-2 border-transparent transition-all group-hover:border-primary/30">
+<img class="w-full h-full object-cover" data-alt="A smiling professional male barber with a sharp fade haircut, wearing a black apron. The setting is a prestigious barbershop with warm ambient lighting and leather chairs visible in the soft-focus background. The style is dark and sophisticated, conveying trust and prestige." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtnjN-ydkifgxpJ3cTLjUdTkcZRTkc34fh6SG2baEdN50gMWQSCnUvQk23OHBm7sLBOwZH_Z5eZdJW2OzdJaXr1IRjINnZrAj4wSq-6b6IWwcVDFosspRGedYePqaLtjJvsmTzsdnbwYRfMEqiS3F3xQXjHyOpOuPKD93VCQC5RO6O4DTo2CqKd0fBWF9crmz2YMSbAVq_mjmlVt4I4WJRuaJ2w4czAzMCb0SmloC3cYQWOD6ipWnd1bYzUJ5HytcbBYUMGcF6G8w"/>
+</div>
+<span class="font-headline-md text-sm text-on-surface">Barbero 2</span>
+<span class="text-xs text-on-surface-variant">Senior</span>
+</div>
+<div class="barber-card flex flex-col items-center gap-2 cursor-pointer group" onclick="selectBarber(this)">
+<div class="w-24 h-24 rounded-full overflow-hidden border-2 border-transparent transition-all group-hover:border-primary/30">
+<img class="w-full h-full object-cover" data-alt="A focused male barber with a classic pompadour hairstyle and grooming expertise. He is positioned in a modern, moody salon environment with charcoal grey walls and gold-rimmed mirrors. Sharp focus on the facial features reflecting professional craftsmanship and meticulous care." src="https://lh3.googleusercontent.com/aida-public/AB6AXuATjXixDy_CUjYEg2Z51k07wSdHFLqxJQfRGgZw2gog2eZzziZ5drCJdc26QdkndVVMRZFQbCm7lN5pkmESXBxE8DQ12by4-8PhlU7SX_RPOcRTaQ1xM2CNJ3NLBXowfGxWdwLlI6qovWIrgDFcbyZB3enoQNKmg4kecWlUnVxLKNCGNDQF5Aun8ElsnFF0nN14fiwzx6bkjT0lStb3ITkjejOvwF35GZ1dRM4HKRmITLhVdETjuslaMni1PyKsD7fz6aXxMirbXrs"/>
+</div>
+<span class="font-headline-md text-sm text-on-surface">Barbero 3</span>
+<span class="text-xs text-on-surface-variant">Style Expert</span>
+</div>
+</div>
+</section>
+<!-- Step 3: Date & Time -->
+<section class="hidden animate-in fade-in slide-in-from-right-4 duration-500" id="step-3">
+<div class="mb-md">
+<h2 class="text-headline-md font-headline-md text-on-background">Agenda tu Cita</h2>
+<p class="text-on-surface-variant text-body-md">Selecciona el momento perfecto.</p>
+</div>
+<!-- Simple Calendar UI -->
+<div class="bg-surface-container rounded-xl p-md border border-outline-variant mb-md shadow-lg">
+<div class="flex justify-between items-center mb-sm">
+<span class="font-headline-md text-primary">Mayo 2024</span>
+<div class="flex gap-2">
+<button class="p-1 rounded-full hover:bg-surface-variant"><span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span></button>
+<button class="p-1 rounded-full hover:bg-surface-variant"><span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span></button>
+</div>
+</div>
+<div class="grid grid-cols-7 text-center text-xs text-on-surface-variant font-bold mb-2">
+<span>LU</span><span>MA</span><span>MI</span><span>JU</span><span>VI</span><span>SA</span><span>DO</span>
+</div>
+<div class="grid grid-cols-7 text-center gap-1">
+<span class="p-2 text-on-surface-variant/30">29</span>
+<span class="p-2 text-on-surface-variant/30">30</span>
+<button class="p-2 rounded-lg hover:bg-primary/20 transition-colors">1</button>
+<button class="p-2 rounded-lg hover:bg-primary/20 transition-colors">2</button>
+<button class="p-2 rounded-lg hover:bg-primary/20 transition-colors">3</button>
+<button class="p-2 rounded-lg bg-primary text-on-primary font-bold">4</button>
+<button class="p-2 rounded-lg hover:bg-primary/20 transition-colors">5</button>
+</div>
+</div>
+<!-- Time Slots -->
+<div class="mb-sm">
+<h3 class="text-label-caps font-label-caps text-on-surface-variant mb-sm">HORARIOS DISPONIBLES</h3>
+<div class="flex overflow-x-auto gap-sm pb-2">
+<button class="time-slot shrink-0 px-md py-sm rounded-lg bg-surface-container-high border border-outline-variant text-on-surface font-semibold hover:border-primary/50 transition-all" onclick="selectTime(this)">10:00 AM</button>
+<button class="time-slot shrink-0 px-md py-sm rounded-lg bg-surface-container-high border border-outline-variant text-on-surface font-semibold hover:border-primary/50 transition-all" onclick="selectTime(this)">11:30 AM</button>
+<button class="time-slot shrink-0 px-md py-sm rounded-lg bg-surface-container-high border border-outline-variant text-on-surface font-semibold hover:border-primary/50 transition-all" onclick="selectTime(this)">01:00 PM</button>
+<button class="time-slot shrink-0 px-md py-sm rounded-lg bg-surface-container-high border border-outline-variant text-on-surface font-semibold hover:border-primary/50 transition-all" onclick="selectTime(this)">03:30 PM</button>
+<button class="time-slot shrink-0 px-md py-sm rounded-lg bg-surface-container-high border border-outline-variant text-on-surface font-semibold hover:border-primary/50 transition-all" onclick="selectTime(this)">05:00 PM</button>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Bottom Action Area -->
+<div class="fixed bottom-0 left-0 w-full p-gutter bg-surface/80 backdrop-blur-xl border-t border-outline-variant/30 flex items-center justify-between">
+<button class="flex items-center text-on-surface-variant font-bold opacity-0 pointer-events-none transition-all" id="btn-back" onclick="navigateBack()">
+<span class="material-symbols-outlined mr-1" data-icon="arrow_back">arrow_back</span> Atrás
+        </button>
+<button class="bg-primary hover:bg-primary-container text-on-primary font-button px-xl py-md rounded-full shadow-lg shadow-primary/20 transition-all active:scale-95 disabled:opacity-50" id="btn-continue" onclick="navigateNext()">
+            Continuar
+        </button>
+</div>
+<!-- BottomNavBar (Hidden on desktop, logic as requested) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 pb-safe bg-surface/60 backdrop-blur-xl border-t border-outline-variant/30 shadow-lg md:hidden hidden">
+<div class="flex flex-col items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="text-label-caps font-label-caps mt-1">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center text-primary font-bold">
+<span class="material-symbols-outlined" data-icon="content_cut">content_cut</span>
+<span class="text-label-caps font-label-caps mt-1">Book</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+<span class="text-label-caps font-label-caps mt-1">Appointments</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="text-label-caps font-label-caps mt-1">Profile</span>
+</div>
+</nav>
+<script>
+        let currentStep = 1;
+        const totalSteps = 3;
+
+        function selectService(el) {
+            document.querySelectorAll('.service-card').forEach(card => card.classList.remove('service-card-selected'));
+            el.classList.add('service-card-selected');
+        }
+
+        function selectBarber(el) {
+            document.querySelectorAll('.barber-card').forEach(card => card.classList.remove('barber-selected'));
+            el.classList.add('barber-selected');
+        }
+
+        function selectTime(el) {
+            document.querySelectorAll('.time-slot').forEach(slot => slot.classList.remove('time-slot-selected'));
+            el.classList.add('time-slot-selected');
+        }
+
+        function navigateNext() {
+            if (currentStep < totalSteps) {
+                document.getElementById(`step-${currentStep}`).classList.add('hidden');
+                currentStep++;
+                document.getElementById(`step-${currentStep}`).classList.remove('hidden');
+                updateUI();
+            } else {
+                // Success logic
+                alert('¡Cita agendada con éxito!');
+            }
+        }
+
+        function navigateBack() {
+            if (currentStep > 1) {
+                document.getElementById(`step-${currentStep}`).classList.add('hidden');
+                currentStep--;
+                document.getElementById(`step-${currentStep}`).classList.remove('hidden');
+                updateUI();
+            }
+        }
+
+        function updateUI() {
+            const btnBack = document.getElementById('btn-back');
+            const btnContinue = document.getElementById('btn-continue');
+            const indicators = document.querySelectorAll('.flex-col.items-center');
+
+            if (currentStep > 1) {
+                btnBack.classList.remove('opacity-0', 'pointer-events-none');
+            } else {
+                btnBack.classList.add('opacity-0', 'pointer-events-none');
+            }
+
+            if (currentStep === totalSteps) {
+                btnContinue.innerText = 'Confirmar Cita';
+            } else {
+                btnContinue.innerText = 'Continuar';
+            }
+
+            // Update indicators (simplified logic)
+            indicators.forEach((ind, idx) => {
+                const stepNum = idx + 1;
+                const circle = ind.querySelector('.rounded-full');
+                const label = ind.querySelector('span');
+
+                if (stepNum <= currentStep) {
+                    ind.classList.remove('opacity-50');
+                    circle.classList.add('bg-primary', 'text-on-primary');
+                    circle.classList.remove('border-2', 'border-outline-variant', 'text-on-surface-variant');
+                    label.classList.add('text-primary');
+                    label.classList.remove('text-on-surface-variant');
+                } else {
+                    ind.classList.add('opacity-50');
+                    circle.classList.remove('bg-primary', 'text-on-primary');
+                    circle.classList.add('border-2', 'border-outline-variant', 'text-on-surface-variant');
+                    label.classList.remove('text-primary');
+                    label.classList.add('text-on-surface-variant');
+                }
+            });
+        }
+    </script>
+</body></html>
