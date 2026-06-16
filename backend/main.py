@@ -29,7 +29,7 @@ from pydantic import BaseModel, EmailStr
 
 # ── Configuración ─────────────────────────────────────────────
 DB_PATH = os.getenv("DB_PATH", "./tijeras_locas.db")
-INIT_SQL = os.getenv("INIT_SQL_PATH", "../db/init.sql")
+INIT_SQL = os.getenv("INIT_SQL_PATH", "./init.sql")
 
 app = FastAPI(
     title="Tijeras Locas API",
