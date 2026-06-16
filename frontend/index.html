@@ -93,11 +93,9 @@
 
   <!-- Header -->
   <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-gutter py-base bg-surface/60 backdrop-blur-xl border-b border-outline-variant/30 shadow-sm">
-    <span class="material-symbols-outlined text-primary cursor-pointer" onclick="showScreen('screen-dashboard')">dashboard</span>
+    <div class="w-8"></div>
     <h1 class="text-headline-md font-headline-md font-bold text-primary">Tijeras Locas</h1>
-    <div class="w-10 h-10 rounded-full border border-primary/30 bg-surface-container-high flex items-center justify-center text-primary">
-      <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1">person</span>
-    </div>
+    <div class="w-8"></div>
   </header>
 
   <!-- Hero -->
@@ -118,10 +116,33 @@
         Reservar Cita
       </button>
       <p class="mt-md text-label-caps font-label-caps text-outline uppercase tracking-widest opacity-60">Experiencia Premium Garantizada</p>
+      <button onclick="showAdminLogin()" class="mt-md text-[11px] text-outline/40 hover:text-outline transition-colors block mx-auto">
+        Modo Administrador
+      </button>
     </div>
   </main>
 
-  <!-- Bottom Nav -->
+  <!-- Modal Admin Login -->
+  <div id="admin-modal" class="hidden fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm">
+    <div class="bg-surface-container border border-outline-variant rounded-xl p-lg w-80 shadow-2xl">
+      <h3 class="text-headline-md font-headline-md text-primary mb-sm">Acceso Restringido</h3>
+      <p class="text-body-md text-on-surface-variant mb-md">Ingresa la clave de administrador</p>
+      <input id="admin-password" type="password" placeholder="Contraseña"
+        class="w-full bg-surface-container-high border border-outline-variant rounded-xl px-md py-sm text-on-surface focus:border-primary focus:outline-none mb-sm"
+        onkeydown="if(event.key==='Enter') checkAdminPassword()" />
+      <p id="admin-error" class="text-error text-sm mb-sm hidden">Contraseña incorrecta</p>
+      <div class="flex gap-sm">
+        <button onclick="hideAdminLogin()" class="flex-1 py-sm rounded-xl border border-outline-variant text-on-surface-variant font-button hover:bg-surface-container-high transition-colors">
+          Cancelar
+        </button>
+        <button onclick="checkAdminPassword()" class="flex-1 py-sm rounded-xl bg-primary text-on-primary font-button hover:brightness-110 transition-all">
+          Ingresar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Nav (solo Home y Book) -->
   <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 bg-surface/60 backdrop-blur-xl border-t border-outline-variant/30 rounded-t-xl">
     <button onclick="showScreen('screen-welcome')" class="flex flex-col items-center text-primary px-4 py-2">
       <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1">home</span>
@@ -130,10 +151,6 @@
     <button onclick="showScreen('screen-booking'); resetBooking()" class="flex flex-col items-center text-on-surface-variant px-4 py-2 hover:text-primary transition-colors">
       <span class="material-symbols-outlined">content_cut</span>
       <span class="text-label-caps mt-1">Book</span>
-    </button>
-    <button onclick="showScreen('screen-dashboard')" class="flex flex-col items-center text-on-surface-variant px-4 py-2 hover:text-primary transition-colors">
-      <span class="material-symbols-outlined">dashboard</span>
-      <span class="text-label-caps mt-1">Dashboard</span>
     </button>
   </nav>
 </div>
@@ -504,7 +521,7 @@
 ════════════════════════════════════════════════════════════ -->
 <script>
 // ── Config ───────────────────────────────────────────────────
-const API = "https://tijeraslocasp-production.up.railway.app"; // ← Cambia a tu URL de Render en producción
+const API = "https://tijeraslocasp-production.up.railway.app";
 
 // ── Screen Router ─────────────────────────────────────────────
 function showScreen(id) {
@@ -915,6 +932,30 @@ document.addEventListener('DOMContentLoaded', () => {
   updateProgressBar();
   updateBookingButtons();
 });
+
+// ── Admin Login ───────────────────────────────────────────────
+function showAdminLogin() {
+  document.getElementById('admin-modal').classList.remove('hidden');
+  document.getElementById('admin-password').value = '';
+  document.getElementById('admin-error').classList.add('hidden');
+  setTimeout(() => document.getElementById('admin-password').focus(), 100);
+}
+
+function hideAdminLogin() {
+  document.getElementById('admin-modal').classList.add('hidden');
+}
+
+function checkAdminPassword() {
+  const pwd = document.getElementById('admin-password').value;
+  if (pwd === 'andres123') {
+    hideAdminLogin();
+    showScreen('screen-dashboard');
+  } else {
+    document.getElementById('admin-error').classList.remove('hidden');
+    document.getElementById('admin-password').value = '';
+    document.getElementById('admin-password').focus();
+  }
+}
 </script>
 </body>
 </html>
