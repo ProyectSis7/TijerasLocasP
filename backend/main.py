@@ -45,7 +45,7 @@ async def startup_db():
                     ("Pedro Martínez",1,2,(today-timedelta(days=3)).isoformat(),"09:30","confirmed"),
                     ("Juan García",2,3,(today-timedelta(days=2)).isoformat(),"15:00","confirmed"),
                     ("Miguel Ruiz",3,1,(today-timedelta(days=1)).isoformat(),"11:00","confirmed"),
-                    ("Sofía Díaz",2,2,today.isoformat(),"10:30","confirmed"),
+                    ("Marcelo Díaz",2,1,today.isoformat(),"10:30","confirmed"),
                     ("Pablo Fernández",1,1,today.isoformat(),"17:30","pending"),
                 ]
                 for c in citas:
