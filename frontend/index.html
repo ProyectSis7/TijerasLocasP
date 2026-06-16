@@ -571,7 +571,7 @@ async function loadServices() {
           <div>
             <h3 class="font-headline-md text-lg text-primary">${s.name}</h3>
             <p class="text-on-surface-variant text-sm mt-1">${s.description || ''}</p>
-            <p class="text-on-surface font-bold mt-2 text-lg">$${s.price}</p>
+            <p class="text-on-surface font-bold mt-2 text-lg">$${s.price.toLocaleString('es-CL')}</p>
           </div>
           <span class="material-symbols-outlined text-primary-container group-hover:scale-110 transition-transform">${icons[s.id] || 'content_cut'}</span>
         </div>
