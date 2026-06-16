@@ -1,14 +1,904 @@
 <!DOCTYPE html>
-<html lang="es">
+<html class="dark" lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Tijeras Locas</title>
-    <script>
-        // Esto redirige automáticamente a la pantalla de inicio de Stitch
-        window.location.href = "inicio_tijeras_locas/code.html";
-    </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Tijeras Locas</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Inter:wght@300;400;500;600&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "secondary": "#c8c6c5", "surface-bright": "#38393a", "on-background": "#e2e2e2",
+            "surface-dim": "#121414", "primary": "#f2ca50", "on-surface": "#e2e2e2",
+            "primary-container": "#d4af37", "on-primary-container": "#554300",
+            "outline-variant": "#4d4635", "secondary-container": "#474746",
+            "outline": "#99907c", "surface-container-lowest": "#0d0e0f",
+            "on-secondary": "#303030", "on-primary": "#3c2f00",
+            "surface": "#121414", "surface-variant": "#333535",
+            "surface-container": "#1e2020", "secondary-fixed-dim": "#c8c6c5",
+            "surface-container-low": "#1a1c1c", "background": "#121414",
+            "surface-container-high": "#282a2b", "on-secondary-container": "#b7b5b4",
+            "on-surface-variant": "#d0c5af", "tertiary": "#d0cecd",
+            "error-container": "#93000a", "primary-fixed-dim": "#e9c349",
+            "on-error": "#690005", "error": "#ffb4ab", "surface-tint": "#e9c349",
+            "surface-container-highest": "#333535",
+          },
+          borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+          spacing: { "lg": "40px", "sm": "12px", "base": "8px", "xs": "4px", "xl": "64px", "md": "24px", "gutter": "24px" },
+          fontFamily: { "label-caps": ["Montserrat"], "body-lg": ["Inter"], "headline-md": ["Montserrat"], "button": ["Montserrat"], "body-md": ["Inter"] },
+          fontSize: {
+            "label-caps": ["12px", { "lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "700" }],
+            "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+            "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+            "button": ["14px", { "lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "600" }],
+            "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+            "display-lg-mobile": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    /* ── Custom styles ───────────────────────── */
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; user-select: none; }
+    body { min-height: max(884px, 100dvh); }
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: #121414; }
+    ::-webkit-scrollbar-thumb { background: #333535; border-radius: 10px; }
+
+    /* ── Screens ─────────────────────────────── */
+    .screen { display: none; }
+    .screen.active { display: flex; }
+
+    /* ── Welcome ─────────────────────────────── */
+    @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    .animate-float { animation: float 6s ease-in-out infinite; }
+    .gold-glow { box-shadow: 0 0 20px rgba(212,175,55,.3); }
+
+    /* ── Booking ─────────────────────────────── */
+    .service-card-selected { border-color: #f2ca50 !important; background-color: rgba(242,202,80,.05); }
+    .barber-selected > div:first-child { border-color: #f2ca50 !important; }
+    .time-slot-selected { background-color: #f2ca50 !important; color: #3c2f00 !important; border-color: #f2ca50 !important; }
+    .date-selected { background: #f2ca50; color: #3c2f00; border-radius: 9999px; font-weight: 700; }
+
+    /* ── Confirm ─────────────────────────────── */
+    @keyframes scale-in { 0%{transform:scale(.5);opacity:0} 100%{transform:scale(1);opacity:1} }
+    .animate-scale-in { animation: scale-in .6s cubic-bezier(.34,1.56,.64,1); }
+    .check-glow { filter: drop-shadow(0 0 15px rgba(212,175,55,.4)); }
+
+    /* ── Dashboard glass ────────────────────── */
+    .glass-panel { background: rgba(30,32,32,.7); backdrop-filter: blur(12px); border: 1px solid rgba(77,70,53,.3); }
+    .glass-panel:hover { transform: translateY(-2px); transition: transform .2s; }
+
+    /* ── Loading skeleton ────────────────────── */
+    @keyframes shimmer { 0%{background-position:-800px 0} 100%{background-position:800px 0} }
+    .skeleton { background: linear-gradient(90deg,#1e2020 25%,#282a2b 50%,#1e2020 75%); background-size:800px; animation: shimmer 1.5s infinite; border-radius: 6px; }
+  </style>
 </head>
-<body>
-    <p>Cargando Tijeras Locas...</p>
+<body class="bg-background text-on-background font-body-md overflow-x-hidden">
+
+<!-- ═══════════════════════════════════════════════════════════
+     SCREEN 1 · WELCOME
+════════════════════════════════════════════════════════════ -->
+<div id="screen-welcome" class="screen active flex-col h-screen overflow-hidden">
+  <!-- Background -->
+  <div class="fixed inset-0 z-0">
+    <div class="absolute inset-0 bg-gradient-to-b from-background/40 via-background/80 to-background z-10"></div>
+    <div class="w-full h-full bg-surface-container-low"></div>
+  </div>
+
+  <!-- Header -->
+  <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-gutter py-base bg-surface/60 backdrop-blur-xl border-b border-outline-variant/30 shadow-sm">
+    <span class="material-symbols-outlined text-primary cursor-pointer" onclick="showScreen('screen-dashboard')">dashboard</span>
+    <h1 class="text-headline-md font-headline-md font-bold text-primary">Tijeras Locas</h1>
+    <div class="w-10 h-10 rounded-full border border-primary/30 bg-surface-container-high flex items-center justify-center text-primary">
+      <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1">person</span>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <main class="relative z-20 flex-grow flex flex-col items-center justify-center px-gutter text-center">
+    <div class="mb-xl animate-float">
+      <div class="w-32 h-32 mb-6 mx-auto flex items-center justify-center rounded-full border-2 border-primary-container gold-glow bg-surface-container/40 backdrop-blur-sm">
+        <span class="material-symbols-outlined text-7xl text-primary-container" style="font-variation-settings:'FILL' 1">content_cut</span>
+      </div>
+      <h2 class="text-display-lg-mobile font-display-lg-mobile text-on-surface mb-xs tracking-tight">Tijeras Locas</h2>
+      <div class="h-1 w-12 bg-primary mx-auto rounded-full mb-md"></div>
+    </div>
+    <div class="mb-xl">
+      <p class="text-body-lg font-body-lg text-on-surface-variant max-w-xs mx-auto italic opacity-90">"Tu mejor versión comienza aquí"</p>
+    </div>
+    <div class="w-full max-w-sm px-4">
+      <button onclick="showScreen('screen-booking'); resetBooking()" class="w-full py-md bg-primary-container text-on-primary-container font-button text-button rounded-xl shadow-lg transition-all duration-300 active:scale-95 hover:brightness-110 flex items-center justify-center gap-base gold-glow">
+        <span class="material-symbols-outlined">calendar_month</span>
+        Reservar Cita
+      </button>
+      <p class="mt-md text-label-caps font-label-caps text-outline uppercase tracking-widest opacity-60">Experiencia Premium Garantizada</p>
+    </div>
+  </main>
+
+  <!-- Bottom Nav -->
+  <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 bg-surface/60 backdrop-blur-xl border-t border-outline-variant/30 rounded-t-xl">
+    <button onclick="showScreen('screen-welcome')" class="flex flex-col items-center text-primary px-4 py-2">
+      <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1">home</span>
+      <span class="text-label-caps mt-1">Home</span>
+    </button>
+    <button onclick="showScreen('screen-booking'); resetBooking()" class="flex flex-col items-center text-on-surface-variant px-4 py-2 hover:text-primary transition-colors">
+      <span class="material-symbols-outlined">content_cut</span>
+      <span class="text-label-caps mt-1">Book</span>
+    </button>
+    <button onclick="showScreen('screen-dashboard')" class="flex flex-col items-center text-on-surface-variant px-4 py-2 hover:text-primary transition-colors">
+      <span class="material-symbols-outlined">dashboard</span>
+      <span class="text-label-caps mt-1">Dashboard</span>
+    </button>
+  </nav>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SCREEN 2 · BOOKING (3 steps)
+════════════════════════════════════════════════════════════ -->
+<div id="screen-booking" class="screen flex-col min-h-screen">
+
+  <!-- Header -->
+  <header class="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-gutter py-base bg-surface/60 backdrop-blur-xl border-b border-outline-variant/30 shadow-sm">
+    <button onclick="showScreen('screen-welcome')" class="text-primary">
+      <span class="material-symbols-outlined">arrow_back</span>
+    </button>
+    <h1 class="text-headline-md font-headline-md font-bold text-primary">Tijeras Locas</h1>
+    <div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-primary">
+      <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1">person</span>
+    </div>
+  </header>
+
+  <main class="flex-1 mt-20 mb-32 px-gutter max-w-lg mx-auto w-full">
+
+    <!-- Progress Indicator -->
+    <div class="flex justify-between items-center mb-lg" id="progress-bar">
+      <!-- Steps injected by JS -->
+    </div>
+
+    <!-- Step 1: Services -->
+    <section id="booking-step-1" class="space-y-md">
+      <div class="mb-md">
+        <h2 class="text-headline-md font-headline-md text-on-background">Selecciona tu Servicio</h2>
+        <p class="text-on-surface-variant text-body-md">Experiencias de barbería de lujo adaptadas a ti.</p>
+      </div>
+      <div id="services-list" class="space-y-md">
+        <!-- Skeleton -->
+        <div class="skeleton h-24 w-full"></div>
+        <div class="skeleton h-24 w-full"></div>
+        <div class="skeleton h-24 w-full"></div>
+      </div>
+    </section>
+
+    <!-- Step 2: Barbers -->
+    <section id="booking-step-2" class="hidden space-y-md">
+      <div class="mb-md">
+        <h2 class="text-headline-md font-headline-md text-on-background">Tu Barbero</h2>
+        <p class="text-on-surface-variant text-body-md">Nuestros maestros del detalle.</p>
+      </div>
+      <div id="barbers-list" class="flex flex-wrap justify-center gap-md">
+        <div class="skeleton h-32 w-28 rounded-xl"></div>
+        <div class="skeleton h-32 w-28 rounded-xl"></div>
+        <div class="skeleton h-32 w-28 rounded-xl"></div>
+      </div>
+    </section>
+
+    <!-- Step 3: Date & Time -->
+    <section id="booking-step-3" class="hidden space-y-md">
+      <div class="mb-md">
+        <h2 class="text-headline-md font-headline-md text-on-background">Agenda tu Cita</h2>
+        <p class="text-on-surface-variant text-body-md">Selecciona el momento perfecto.</p>
+      </div>
+
+      <!-- Mini Calendar -->
+      <div class="bg-surface-container rounded-xl p-md border border-outline-variant shadow-lg">
+        <div class="flex justify-between items-center mb-sm">
+          <span id="cal-month-label" class="font-headline-md text-primary"></span>
+          <div class="flex gap-2">
+            <button onclick="changeMonth(-1)" class="p-1 rounded-full hover:bg-surface-variant transition-colors">
+              <span class="material-symbols-outlined">chevron_left</span>
+            </button>
+            <button onclick="changeMonth(1)" class="p-1 rounded-full hover:bg-surface-variant transition-colors">
+              <span class="material-symbols-outlined">chevron_right</span>
+            </button>
+          </div>
+        </div>
+        <div class="grid grid-cols-7 text-center text-xs text-on-surface-variant font-bold mb-2">
+          <span>LU</span><span>MA</span><span>MI</span><span>JU</span><span>VI</span><span>SA</span><span>DO</span>
+        </div>
+        <div id="cal-grid" class="grid grid-cols-7 text-center gap-1 text-sm"></div>
+      </div>
+
+      <!-- Time Slots -->
+      <div>
+        <h3 class="text-label-caps font-label-caps text-on-surface-variant mb-sm">HORARIOS DISPONIBLES</h3>
+        <div class="flex overflow-x-auto gap-sm pb-2" id="time-slots">
+          <!-- Generated by JS -->
+        </div>
+      </div>
+
+      <!-- Client Name -->
+      <div>
+        <label class="text-label-caps font-label-caps text-on-surface-variant block mb-1">TU NOMBRE</label>
+        <input id="client-name" type="text" placeholder="Ej: Juan García"
+          class="w-full bg-surface-container border border-outline-variant rounded-xl px-md py-sm text-on-surface focus:border-primary focus:outline-none transition-colors" />
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Bottom Action Area -->
+  <div class="fixed bottom-0 left-0 w-full p-gutter bg-surface/80 backdrop-blur-xl border-t border-outline-variant/30 flex items-center justify-between z-40">
+    <button id="btn-back" onclick="bookingBack()"
+      class="flex items-center text-on-surface-variant font-bold opacity-0 pointer-events-none transition-all">
+      <span class="material-symbols-outlined mr-1">arrow_back</span> Atrás
+    </button>
+    <button id="btn-continue" onclick="bookingNext()"
+      class="bg-primary hover:bg-primary-container text-on-primary font-button px-xl py-md rounded-full shadow-lg shadow-primary/20 transition-all active:scale-95">
+      Continuar
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SCREEN 3 · CONFIRMATION
+════════════════════════════════════════════════════════════ -->
+<div id="screen-confirm" class="screen flex-col min-h-screen items-center justify-center p-gutter">
+  <main class="w-full max-w-md flex flex-col items-center text-center space-y-md animate-scale-in">
+
+    <div class="relative w-32 h-32 flex items-center justify-center rounded-full bg-surface-container-high border border-primary/20 check-glow mb-md">
+      <span class="material-symbols-outlined text-primary text-7xl" style="font-variation-settings:'FILL' 1">check_circle</span>
+      <div class="absolute inset-0 rounded-full border-2 border-primary/10 animate-ping opacity-25"></div>
+    </div>
+
+    <div class="space-y-xs">
+      <h1 class="font-headline-md text-headline-md text-primary tracking-tight">¡Cita agendada con éxito!</h1>
+      <p class="font-body-md text-on-surface-variant">Tu lugar está reservado en Tijeras Locas.</p>
+    </div>
+
+    <!-- Summary card (filled by JS) -->
+    <div class="w-full bg-surface-container border border-outline-variant/30 rounded-xl p-md mt-lg text-left space-y-sm">
+      <div class="flex items-center justify-between border-b border-outline-variant/20 pb-sm">
+        <span class="font-label-caps text-label-caps text-on-surface-variant">RESUMEN</span>
+        <span id="confirm-code" class="font-label-caps text-label-caps text-primary">#TL-0000</span>
+      </div>
+      <div class="grid grid-cols-2 gap-md pt-base">
+        <div class="space-y-1">
+          <p class="font-label-caps text-[10px] text-outline uppercase tracking-widest">Servicio</p>
+          <p id="confirm-service" class="font-body-md font-bold text-on-surface">—</p>
+        </div>
+        <div class="space-y-1">
+          <p class="font-label-caps text-[10px] text-outline uppercase tracking-widest">Barbero</p>
+          <p id="confirm-barber" class="font-body-md font-bold text-on-surface">—</p>
+        </div>
+        <div class="space-y-1">
+          <p class="font-label-caps text-[10px] text-outline uppercase tracking-widest">Fecha</p>
+          <p id="confirm-date" class="font-body-md font-bold text-on-surface">—</p>
+        </div>
+        <div class="space-y-1">
+          <p class="font-label-caps text-[10px] text-outline uppercase tracking-widest">Hora</p>
+          <p id="confirm-time" class="font-body-md font-bold text-on-surface">—</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="w-full flex flex-col gap-sm pt-md">
+      <button onclick="showScreen('screen-welcome')"
+        class="w-full py-md rounded-lg bg-primary-container text-on-primary font-button uppercase tracking-widest shadow-lg active:scale-95 transition-all flex items-center justify-center gap-sm">
+        <span class="material-symbols-outlined text-sm">home</span>
+        Volver al Inicio
+      </button>
+      <button onclick="showScreen('screen-booking'); resetBooking()"
+        class="w-full py-md rounded-lg border border-primary text-primary font-button uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center gap-sm">
+        <span class="material-symbols-outlined text-sm">add</span>
+        Nueva Cita
+      </button>
+    </div>
+
+    <p class="pt-lg font-body-md text-[13px] text-outline italic">
+      Te hemos enviado un recordatorio por correo electrónico.
+    </p>
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SCREEN 4 · ADMIN DASHBOARD
+════════════════════════════════════════════════════════════ -->
+<div id="screen-dashboard" class="screen flex-col h-screen overflow-hidden">
+
+  <!-- Sidebar -->
+  <aside class="h-screen w-64 fixed left-0 top-0 bg-surface-container border-r border-outline-variant flex flex-col py-md z-50 hidden md:flex">
+    <div class="text-primary font-headline-md font-bold px-md py-lg mb-base">Tijeras Locas</div>
+    <div class="px-md mb-xl">
+      <div class="flex items-center gap-sm">
+        <div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary font-bold">A</div>
+        <div>
+          <p class="text-body-md font-bold text-on-surface">Andrés</p>
+          <p class="text-[10px] text-on-surface-variant uppercase tracking-wider">Dueño / Admin</p>
+        </div>
+      </div>
+    </div>
+    <nav class="flex-grow flex flex-col space-y-1">
+      <a href="#" class="bg-primary text-on-primary font-bold rounded-lg mx-2 my-1 px-4 py-3 flex items-center gap-3">
+        <span class="material-symbols-outlined">dashboard</span><span>Dashboard</span>
+      </a>
+      <a href="#" class="text-on-surface-variant hover:bg-surface-container-high rounded-lg mx-2 my-1 px-4 py-3 flex items-center gap-3 transition-all">
+        <span class="material-symbols-outlined">event_note</span><span>Citas</span>
+      </a>
+      <a href="#" class="text-on-surface-variant hover:bg-surface-container-high rounded-lg mx-2 my-1 px-4 py-3 flex items-center gap-3 transition-all">
+        <span class="material-symbols-outlined">group</span><span>Barberos</span>
+      </a>
+    </nav>
+    <div class="px-md mt-auto pt-md border-t border-outline-variant/30">
+      <button onclick="showScreen('screen-welcome')" class="w-full text-on-surface-variant hover:text-error flex items-center gap-3 px-4 py-2 transition-colors">
+        <span class="material-symbols-outlined">logout</span><span>Salir</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main area -->
+  <main class="md:ml-64 flex-grow h-screen overflow-y-auto bg-surface-dim">
+
+    <!-- Top bar -->
+    <header class="sticky top-0 w-full z-40 bg-surface/60 backdrop-blur-xl border-b border-outline-variant/30 flex justify-between items-center px-gutter py-md">
+      <div class="flex items-center gap-3">
+        <button onclick="showScreen('screen-welcome')" class="md:hidden text-primary">
+          <span class="material-symbols-outlined">arrow_back</span>
+        </button>
+        <div>
+          <h1 class="text-headline-md font-headline-md text-primary">Vista General</h1>
+          <p class="text-body-md text-on-surface-variant hidden md:block">Bienvenido, Andrés.</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-md">
+        <button onclick="loadDashboard()" class="text-on-surface-variant hover:text-primary transition-colors" title="Actualizar">
+          <span class="material-symbols-outlined">refresh</span>
+        </button>
+        <span id="dash-today-label" class="text-label-caps text-on-surface-variant hidden md:block"></span>
+      </div>
+    </header>
+
+    <div class="p-gutter space-y-gutter pb-20">
+
+      <!-- KPI Cards -->
+      <section class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+        <div class="glass-panel p-md rounded-xl flex items-center justify-between">
+          <div>
+            <p class="text-label-caps text-on-surface-variant mb-xs">INGRESOS SEMANA</p>
+            <h3 id="kpi-revenue" class="text-headline-md font-bold text-primary skeleton h-8 w-24">—</h3>
+            <p class="text-[10px] text-emerald-400 mt-1 flex items-center gap-1">
+              <span class="material-symbols-outlined text-[12px]">trending_up</span>
+              <span id="kpi-revenue-sub">Calculando...</span>
+            </p>
+          </div>
+          <div class="w-12 h-12 rounded-lg bg-primary-container/10 flex items-center justify-center text-primary-container">
+            <span class="material-symbols-outlined text-3xl">payments</span>
+          </div>
+        </div>
+        <div class="glass-panel p-md rounded-xl flex items-center justify-between">
+          <div>
+            <p class="text-label-caps text-on-surface-variant mb-xs">CITAS HOY</p>
+            <h3 id="kpi-today" class="text-headline-md font-bold text-on-surface">—</h3>
+            <p class="text-[10px] text-on-surface-variant mt-1">Total agendadas hoy</p>
+          </div>
+          <div class="w-12 h-12 rounded-lg bg-primary-container/10 flex items-center justify-center text-primary-container">
+            <span class="material-symbols-outlined text-3xl">calendar_month</span>
+          </div>
+        </div>
+        <div class="glass-panel p-md rounded-xl flex items-center justify-between">
+          <div>
+            <p class="text-label-caps text-on-surface-variant mb-xs">HUECOS VACÍOS</p>
+            <h3 id="kpi-gaps" class="text-headline-md font-bold text-primary-container">—</h3>
+            <p class="text-[10px] text-on-surface-variant mt-1">Detectados hoy</p>
+          </div>
+          <div class="w-12 h-12 rounded-lg bg-primary-container/20 flex items-center justify-center text-primary">
+            <span class="material-symbols-outlined text-3xl">hourglass_empty</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Middle: Rankings + Schedule -->
+      <section class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+
+        <!-- Rankings -->
+        <div class="lg:col-span-5 space-y-gutter">
+          <!-- Barber Ranking -->
+          <div class="glass-panel rounded-xl overflow-hidden">
+            <div class="px-md py-sm border-b border-outline-variant/30 flex justify-between items-center">
+              <h4 class="text-body-md font-bold text-primary">Ranking de Barberos</h4>
+              <span class="text-[10px] text-on-surface-variant">Esta semana</span>
+            </div>
+            <div id="barber-ranking-list" class="p-md space-y-md">
+              <div class="skeleton h-10 w-full rounded-lg"></div>
+              <div class="skeleton h-10 w-full rounded-lg"></div>
+            </div>
+          </div>
+
+          <!-- Service Popularity -->
+          <div class="glass-panel rounded-xl p-md">
+            <h4 class="text-body-md font-bold text-primary mb-md">Popularidad de Servicios</h4>
+            <div class="flex items-center justify-around py-base">
+              <div class="relative w-32 h-32">
+                <svg class="w-full h-full transform -rotate-90" viewBox="0 0 128 128">
+                  <!-- Track -->
+                  <circle cx="64" cy="64" r="54" fill="transparent" stroke="#282a2b" stroke-width="14"/>
+                  <!-- Segment 1 -->
+                  <circle id="donut-seg1" cx="64" cy="64" r="54" fill="transparent" stroke="#f2ca50"
+                    stroke-width="14" stroke-dasharray="339.3" stroke-dashoffset="339.3"
+                    style="transition:stroke-dashoffset 1s ease-out"/>
+                  <!-- Segment 2 -->
+                  <circle id="donut-seg2" cx="64" cy="64" r="54" fill="transparent" stroke="#d4af37"
+                    stroke-width="14" stroke-dasharray="339.3" stroke-dashoffset="339.3" opacity=".7"
+                    style="transition:stroke-dashoffset 1.2s ease-out"/>
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                  <span id="donut-total" class="text-headline-md font-bold">—</span>
+                  <span class="text-[8px] text-on-surface-variant uppercase">Total</span>
+                </div>
+              </div>
+              <div id="service-legend" class="space-y-sm text-sm"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Today's Schedule -->
+        <div class="lg:col-span-7">
+          <div class="glass-panel rounded-xl h-full flex flex-col">
+            <div class="px-md py-sm border-b border-outline-variant/30 flex justify-between items-center">
+              <h4 class="text-body-md font-bold text-primary">Agenda de Hoy</h4>
+              <span id="dash-date-sub" class="text-[10px] text-on-surface-variant"></span>
+            </div>
+            <div id="today-schedule" class="flex-grow p-md overflow-y-auto max-h-[480px]">
+              <div class="relative border-l border-outline-variant/30 ml-16 space-y-6" id="schedule-timeline">
+                <div class="skeleton h-16 w-full rounded-lg ml-4"></div>
+                <div class="skeleton h-16 w-full rounded-lg ml-4"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Upcoming appointments table -->
+      <section class="glass-panel rounded-xl overflow-hidden mb-xl">
+        <div class="px-md py-sm border-b border-outline-variant/30 flex justify-between items-center">
+          <h4 class="text-body-md font-bold text-primary">Próximas Citas Confirmadas</h4>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left">
+            <thead>
+              <tr class="bg-surface-container-high/30">
+                <th class="px-md py-sm text-label-caps text-on-surface-variant">CLIENTE</th>
+                <th class="px-md py-sm text-label-caps text-on-surface-variant">SERVICIO</th>
+                <th class="px-md py-sm text-label-caps text-on-surface-variant">BARBERO</th>
+                <th class="px-md py-sm text-label-caps text-on-surface-variant">HORA</th>
+                <th class="px-md py-sm text-label-caps text-on-surface-variant">ESTADO</th>
+              </tr>
+            </thead>
+            <tbody id="appointments-table" class="divide-y divide-outline-variant/10">
+              <tr><td colspan="5" class="px-md py-lg text-center text-on-surface-variant">Cargando citas...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     JAVASCRIPT · App Logic
+════════════════════════════════════════════════════════════ -->
+<script>
+// ── Config ───────────────────────────────────────────────────
+const API = "http://localhost:8000"; // ← Cambia a tu URL de Render en producción
+
+// ── Screen Router ─────────────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) {
+    el.classList.add('active');
+    if (id === 'screen-dashboard') loadDashboard();
+    if (id === 'screen-booking') loadBookingData();
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+//  BOOKING FLOW
+// ════════════════════════════════════════════════════════════
+let booking = { step: 1, serviceId: null, serviceName: null, servicePrice: null, barberId: null, barberName: null, date: null, time: null };
+let calYear, calMonth;
+
+function resetBooking() {
+  booking = { step: 1, serviceId: null, serviceName: null, servicePrice: null, barberId: null, barberName: null, date: null, time: null };
+  ['booking-step-1','booking-step-2','booking-step-3'].forEach((id,i) => {
+    document.getElementById(id).classList.toggle('hidden', i !== 0);
+  });
+  updateProgressBar();
+  updateBookingButtons();
+  const now = new Date();
+  calYear = now.getFullYear();
+  calMonth = now.getMonth();
+  renderCalendar();
+  renderTimeSlots();
+}
+
+function updateProgressBar() {
+  const labels = ['SERVICIO','BARBERO','FECHA'];
+  const bar = document.getElementById('progress-bar');
+  bar.innerHTML = '';
+  labels.forEach((label, idx) => {
+    const step = idx + 1;
+    const active = step <= booking.step;
+    const circle = `<div class="flex flex-col items-center gap-1 ${active ? '' : 'opacity-50'}">
+      <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${active ? 'bg-primary text-on-primary' : 'border-2 border-outline-variant text-on-surface-variant'}">${step}</div>
+      <span class="text-label-caps font-label-caps ${active ? 'text-primary' : 'text-on-surface-variant'}">${label}</span>
+    </div>`;
+    bar.innerHTML += circle;
+    if (idx < 2) bar.innerHTML += `<div class="flex-1 h-[2px] bg-outline-variant mx-2 mb-4"></div>`;
+  });
+}
+
+function updateBookingButtons() {
+  const back = document.getElementById('btn-back');
+  const cont = document.getElementById('btn-continue');
+  if (booking.step > 1) { back.classList.remove('opacity-0','pointer-events-none'); }
+  else { back.classList.add('opacity-0','pointer-events-none'); }
+  cont.textContent = booking.step === 3 ? 'Confirmar Cita' : 'Continuar';
+}
+
+async function loadBookingData() {
+  resetBooking();
+  await loadServices();
+  await loadBarbers();
+}
+
+// ── Services ──────────────────────────────────────────────────
+async function loadServices() {
+  try {
+    const res = await fetch(`${API}/services`);
+    const services = await res.json();
+    const icons = { 1: 'content_cut', 2: 'face', 3: 'stars' };
+    document.getElementById('services-list').innerHTML = services.map(s => `
+      <div class="service-card group cursor-pointer p-md bg-surface-container border border-outline-variant rounded-xl transition-all hover:border-primary/50 relative overflow-hidden"
+           data-id="${s.id}" data-name="${s.name}" data-price="${s.price}" onclick="selectService(this)">
+        <div class="flex justify-between items-start">
+          <div>
+            <h3 class="font-headline-md text-lg text-primary">${s.name}</h3>
+            <p class="text-on-surface-variant text-sm mt-1">${s.description || ''}</p>
+            <p class="text-on-surface font-bold mt-2 text-lg">$${s.price}</p>
+          </div>
+          <span class="material-symbols-outlined text-primary-container group-hover:scale-110 transition-transform">${icons[s.id] || 'content_cut'}</span>
+        </div>
+      </div>`).join('');
+  } catch {
+    document.getElementById('services-list').innerHTML = `<p class="text-error text-sm">Error al cargar servicios. ¿El backend está activo?</p>`;
+  }
+}
+
+function selectService(el) {
+  document.querySelectorAll('.service-card').forEach(c => c.classList.remove('service-card-selected'));
+  el.classList.add('service-card-selected');
+  booking.serviceId   = +el.dataset.id;
+  booking.serviceName = el.dataset.name;
+  booking.servicePrice = +el.dataset.price;
+}
+
+// ── Barbers ───────────────────────────────────────────────────
+async function loadBarbers() {
+  try {
+    const res = await fetch(`${API}/barbers`);
+    const barbers = await res.json();
+    const initials = name => name[0].toUpperCase();
+    document.getElementById('barbers-list').innerHTML = barbers.map(b => `
+      <div class="barber-card flex flex-col items-center gap-2 cursor-pointer group" data-id="${b.id}" data-name="${b.name}" onclick="selectBarber(this)">
+        <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-transparent transition-all group-hover:border-primary/30 bg-primary-container flex items-center justify-center text-on-primary text-3xl font-bold">
+          ${initials(b.name)}
+        </div>
+        <span class="font-headline-md text-sm text-on-surface">${b.name}</span>
+        <span class="text-xs text-on-surface-variant">${b.role}</span>
+      </div>`).join('');
+  } catch {/* silencioso */}
+}
+
+function selectBarber(el) {
+  document.querySelectorAll('.barber-card').forEach(c => c.classList.remove('barber-selected'));
+  el.classList.add('barber-selected');
+  booking.barberId   = +el.dataset.id;
+  booking.barberName = el.dataset.name;
+}
+
+// ── Calendar ──────────────────────────────────────────────────
+function renderCalendar() {
+  const monthNames = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  document.getElementById('cal-month-label').textContent = `${monthNames[calMonth]} ${calYear}`;
+
+  const firstDay = new Date(calYear, calMonth, 1).getDay(); // 0=Sun
+  const offset   = (firstDay === 0) ? 6 : firstDay - 1;    // adjust to Mon-first
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const today    = new Date();
+
+  let html = '';
+  for (let i = 0; i < offset; i++) html += '<span></span>';
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isPast  = new Date(calYear, calMonth, d) < new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const isSel   = dateStr === booking.date;
+    html += `<button onclick="selectDate('${dateStr}', this)"
+      class="p-2 text-sm rounded-lg transition-colors ${isSel ? 'date-selected' : isPast ? 'text-on-surface-variant/30 pointer-events-none' : 'hover:bg-primary/20'}"
+      ${isPast ? 'disabled' : ''}>${d}</button>`;
+  }
+  document.getElementById('cal-grid').innerHTML = html;
+}
+
+function selectDate(dateStr, el) {
+  booking.date = dateStr;
+  document.querySelectorAll('#cal-grid button').forEach(b => b.classList.remove('date-selected'));
+  el.classList.add('date-selected');
+}
+
+function changeMonth(delta) {
+  calMonth += delta;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  if (calMonth < 0)  { calMonth = 11; calYear--; }
+  renderCalendar();
+}
+
+function renderTimeSlots() {
+  const slots = ['09:00','10:00','11:00','12:00','14:00','15:00','16:00','17:00','18:00'];
+  document.getElementById('time-slots').innerHTML = slots.map(t => `
+    <button class="time-slot shrink-0 px-md py-sm rounded-lg bg-surface-container-high border border-outline-variant text-on-surface font-semibold hover:border-primary/50 transition-all text-sm" onclick="selectTime(this, '${t}')">${t}</button>`).join('');
+}
+
+function selectTime(el, time) {
+  document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('time-slot-selected'));
+  el.classList.add('time-slot-selected');
+  booking.time = time;
+}
+
+// ── Navigation ────────────────────────────────────────────────
+function bookingNext() {
+  if (booking.step === 1) {
+    if (!booking.serviceId) return showToast('Selecciona un servicio primero');
+    switchStep(2);
+  } else if (booking.step === 2) {
+    if (!booking.barberId) return showToast('Selecciona un barbero');
+    switchStep(3);
+  } else {
+    submitAppointment();
+  }
+}
+
+function bookingBack() {
+  if (booking.step > 1) switchStep(booking.step - 1);
+}
+
+function switchStep(next) {
+  document.getElementById(`booking-step-${booking.step}`).classList.add('hidden');
+  booking.step = next;
+  document.getElementById(`booking-step-${booking.step}`).classList.remove('hidden');
+  updateProgressBar();
+  updateBookingButtons();
+}
+
+// ── Submit ────────────────────────────────────────────────────
+async function submitAppointment() {
+  if (!booking.date) return showToast('Selecciona una fecha');
+  if (!booking.time) return showToast('Selecciona una hora');
+
+  const clientName = document.getElementById('client-name').value.trim();
+  if (!clientName) return showToast('Escribe tu nombre');
+
+  const payload = {
+    client_name:      clientName,
+    barber_id:        booking.barberId,
+    service_id:       booking.serviceId,
+    appointment_date: booking.date,
+    appointment_time: booking.time,
+    status:           "confirmed",
+  };
+
+  try {
+    const res = await fetch(`${API}/appointments`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error(await res.text());
+    const data = await res.json();
+    showConfirmation(data);
+  } catch (err) {
+    showToast(`Error: ${err.message}`);
+  }
+}
+
+function showConfirmation(data) {
+  const fmt = dateStr => {
+    const [y,m,d] = dateStr.split('-');
+    const months = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    return `${+d} de ${months[+m-1]} de ${y}`;
+  };
+  document.getElementById('confirm-code').textContent = `#TL-${String(data.id).padStart(4,'0')}`;
+  document.getElementById('confirm-service').textContent = booking.serviceName;
+  document.getElementById('confirm-barber').textContent  = booking.barberName;
+  document.getElementById('confirm-date').textContent    = fmt(booking.date);
+  document.getElementById('confirm-time').textContent    = booking.time;
+  showScreen('screen-confirm');
+}
+
+// ════════════════════════════════════════════════════════════
+//  DASHBOARD
+// ════════════════════════════════════════════════════════════
+async function loadDashboard() {
+  setDashboardLabel();
+  try {
+    const res = await fetch(`${API}/appointments/analytics`);
+    if (!res.ok) throw new Error('API error');
+    const data = await res.json();
+    renderKPIs(data.kpis);
+    renderBarberRanking(data.barber_ranking);
+    renderDonut(data.service_ranking);
+    renderSchedule(data.today_schedule);
+    renderAppointmentsTable(data.today_schedule.appointments);
+  } catch (err) {
+    console.error(err);
+    showToast('No se pudo conectar al backend. Verifica que el servidor esté activo.');
+  }
+}
+
+function setDashboardLabel() {
+  const now   = new Date();
+  const opts  = { weekday: 'short', day: 'numeric', month: 'short' };
+  const label = now.toLocaleDateString('es-ES', opts).toUpperCase();
+  const el    = document.getElementById('dash-today-label');
+  const el2   = document.getElementById('dash-date-sub');
+  if (el) el.textContent = `HOY, ${label}`;
+  if (el2) el2.textContent = label;
+}
+
+function renderKPIs(kpis) {
+  document.getElementById('kpi-revenue').textContent = `$${kpis.weekly_revenue.toFixed(2)}`;
+  document.getElementById('kpi-revenue').classList.remove('skeleton');
+  document.getElementById('kpi-revenue-sub').textContent = `Semana ${kpis.week_start} → ${kpis.week_end}`;
+  document.getElementById('kpi-today').textContent = kpis.total_today;
+  document.getElementById('kpi-gaps').textContent  = kpis.gap_alerts;
+}
+
+function renderBarberRanking(ranking) {
+  const colors = ['#f2ca50','#99907c','#474746'];
+  document.getElementById('barber-ranking-list').innerHTML = ranking.map((b, i) => `
+    <div class="flex items-center gap-sm">
+      <div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary font-bold text-sm flex-shrink-0">
+        ${b.name[0]}
+      </div>
+      <div class="flex-grow">
+        <div class="flex justify-between items-end mb-1">
+          <span class="text-body-md font-medium">${b.name}</span>
+          <span class="text-label-caps text-primary">$${b.total_revenue} · ${b.total_appointments} CITAS</span>
+        </div>
+        <div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+          <div class="h-full rounded-full transition-all duration-1000" style="width:${b.revenue_pct}%;background:${colors[i]||'#474746'}"></div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function renderDonut(services) {
+  const CIRC   = 339.3;
+  const total  = services.reduce((a, s) => a + s.total_booked, 0) || 1;
+  const colors = ['#f2ca50','#d4af37','#99907c'];
+
+  // Seg1 → 1st service
+  if (services[0]) {
+    const pct1 = services[0].total_booked / total;
+    document.getElementById('donut-seg1').style.strokeDashoffset = CIRC * (1 - pct1);
+  }
+  // Seg2 → 2nd service (rotated offset)
+  if (services[1]) {
+    const pct1 = services[0].total_booked / total;
+    const pct2 = services[1].total_booked / total;
+    const seg2 = document.getElementById('donut-seg2');
+    seg2.style.strokeDashoffset = CIRC * (1 - pct2);
+    seg2.style.transform        = `rotate(${pct1 * 360}deg)`;
+    seg2.style.transformOrigin  = 'center';
+  }
+  document.getElementById('donut-total').textContent = total;
+
+  const legend = services.map((s, i) => `
+    <div class="flex items-center gap-2">
+      <span class="w-3 h-3 rounded-full inline-block" style="background:${colors[i]||'#474746'}"></span>
+      <span class="text-label-caps">${s.name} ${s.pct}%</span>
+    </div>`).join('');
+  document.getElementById('service-legend').innerHTML = legend;
+}
+
+function renderSchedule(schedule) {
+  const timeline = document.getElementById('schedule-timeline');
+  const { appointments, gaps } = schedule;
+
+  if (!appointments.length) {
+    timeline.innerHTML = `<p class="text-on-surface-variant text-sm ml-4 py-4">No hay citas hoy.</p>`;
+    return;
+  }
+
+  // Build gap map: key = appointment index where gap follows it
+  const gapAfter = {};
+  gaps.forEach(g => {
+    const apt = appointments.find(a => a.appointment_time < g.from);
+    if (apt) gapAfter[apt.id] = g;
+  });
+
+  timeline.innerHTML = appointments.map(a => {
+    const gapHtml = gapAfter[a.id] ? `
+      <div class="relative pl-gutter py-md">
+        <span class="absolute -left-16 top-4 text-[11px] text-primary font-bold">${gapAfter[a.id].from}</span>
+        <div class="bg-primary/5 border border-dashed border-primary/40 p-md rounded-xl flex items-center justify-between gap-md">
+          <div>
+            <p class="text-body-md font-bold text-primary">Hueco vacío (${gapAfter[a.id].gap_minutes} min)</p>
+            <p class="text-body-md text-on-surface-variant text-sm">Hasta ${gapAfter[a.id].to} · ¿Lanzar promoción?</p>
+          </div>
+          <button class="bg-primary text-on-primary text-[11px] px-sm py-xs rounded-full flex items-center gap-1 hover:scale-105 transition-all">
+            <span class="material-symbols-outlined text-[14px]">add_circle</span> PROMO
+          </button>
+        </div>
+        <span class="absolute -left-16 bottom-4 text-[11px] text-primary font-bold">${gapAfter[a.id].to}</span>
+      </div>` : '';
+
+    return `
+      <div class="relative pl-gutter">
+        <span class="absolute -left-16 top-0 text-[11px] text-on-surface-variant font-medium">${a.appointment_time}</span>
+        <div class="bg-surface-container-high/50 p-sm rounded-lg border-l-4 border-primary/50">
+          <p class="text-body-md font-bold">${a.service_name} · ${a.client_name}</p>
+          <p class="text-[10px] text-on-surface-variant">Barbero: ${a.barber_name}</p>
+        </div>
+      </div>${gapHtml}`;
+  }).join('');
+}
+
+function renderAppointmentsTable(appointments) {
+  const tbody = document.getElementById('appointments-table');
+  if (!appointments.length) {
+    tbody.innerHTML = `<tr><td colspan="5" class="px-md py-lg text-center text-on-surface-variant">Sin citas para hoy.</td></tr>`;
+    return;
+  }
+  const statusBadge = s => s === 'confirmed'
+    ? `<span class="bg-emerald-500/10 text-emerald-400 text-[10px] px-2 py-0.5 rounded-full border border-emerald-500/20">Confirmado</span>`
+    : `<span class="bg-primary-container/10 text-primary-container text-[10px] px-2 py-0.5 rounded-full border border-primary-container/20">Pendiente</span>`;
+  tbody.innerHTML = appointments.map(a => `
+    <tr class="hover:bg-surface-container-high/50 transition-colors">
+      <td class="px-md py-md font-medium text-on-surface">${a.client_name}</td>
+      <td class="px-md py-md">${a.service_name}</td>
+      <td class="px-md py-md flex items-center gap-2 mt-1">
+        <span class="w-6 h-6 rounded-full bg-primary/20 text-primary text-[10px] flex items-center justify-center font-bold">${a.barber_name[0]}</span>
+        ${a.barber_name}
+      </td>
+      <td class="px-md py-md">${a.appointment_time}</td>
+      <td class="px-md py-md">${statusBadge(a.status)}</td>
+    </tr>`).join('');
+}
+
+// ── Toast notification ────────────────────────────────────────
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.className = 'fixed bottom-24 left-1/2 -translate-x-1/2 bg-surface-container-high text-on-surface px-md py-sm rounded-xl shadow-lg z-[9999] text-sm font-medium transition-all';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+// ── Init ──────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  const now = new Date();
+  calYear  = now.getFullYear();
+  calMonth = now.getMonth();
+  updateProgressBar();
+  updateBookingButtons();
+});
+</script>
 </body>
 </html>
