@@ -31,9 +31,9 @@ async def startup_db():
                 await db.execute("INSERT INTO barbers (name,role) VALUES ('Diego','Style Expert')")
         async with db.execute("SELECT COUNT(*) as c FROM services") as cur:
             if (await cur.fetchone())["c"] == 0:
-                await db.execute("INSERT INTO services (name,description,price,duration_min) VALUES ('Corte de pelo','Corte clásico o moderno.',20.00,30)")
-                await db.execute("INSERT INTO services (name,description,price,duration_min) VALUES ('Barba','Perfilado y toalla caliente.',15.00,20)")
-                await db.execute("INSERT INTO services (name,description,price,duration_min) VALUES ('Combo','Corte y barba premium.',30.00,50)")
+                await db.execute("INSERT INTO services (name,description,price,duration_min) VALUES ('Corte de pelo','Corte clásico o moderno.',20000,30)")
+                await db.execute("INSERT INTO services (name,description,price,duration_min) VALUES ('Barba','Perfilado y toalla caliente.',15000,20)")
+                await db.execute("INSERT INTO services (name,description,price,duration_min) VALUES ('Combo','Corte y barba premium.',30000,50)")
         async with db.execute("SELECT COUNT(*) as c FROM appointments") as cur:
             if (await cur.fetchone())["c"] == 0:
                 today = date.today()
