@@ -594,7 +594,7 @@ async function loadServices() {
           <div>
             <h3 class="font-headline-md text-lg text-primary">${s.name}</h3>
             <p class="text-on-surface-variant text-sm mt-1">${s.description || ''}</p>
-            <p class="text-on-surface font-bold mt-2 text-lg">$${s.price}</p>
+            <p class="text-on-surface font-bold mt-2 text-lg">${new Intl.NumberFormat('es-CL').format(s.price)}</p>
           </div>
           <span class="material-symbols-outlined text-primary-container group-hover:scale-110 transition-transform">${icons[s.id] || 'content_cut'}</span>
         </div>
@@ -723,12 +723,15 @@ async function submitAppointment() {
   const clientEmail = document.getElementById('client-email').value.trim();
   if (!clientName) return showToast('Escribe tu nombre');
 
+  // Forzar fecha de hoy para que el dashboard muestre datos en tiempo real
+  const todayStr = new Date().toISOString().split('T')[0];
+
   const payload = {
     client_name:      clientName,
     client_email:     clientEmail || null,
     barber_id:        booking.barberId,
     service_id:       booking.serviceId,
-    appointment_date: booking.date,
+    appointment_date: todayStr,
     appointment_time: booking.time,
     status:           "confirmed",
   };
@@ -741,6 +744,8 @@ async function submitAppointment() {
     });
     if (!res.ok) throw new Error(await res.text());
     const data = await res.json();
+    // Actualizar dashboard en tiempo real si está cargado
+    updateDashboardLive(data);
     showConfirmation(data);
   } catch (err) {
     showToast(`Error: ${err.message}`);
@@ -792,7 +797,7 @@ function setDashboardLabel() {
 }
 
 function formatCLP(amount) {
-  return '$' + Math.round(amount).toLocaleString('es-CL');
+  return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits: 0 }).format(Math.round(amount));
 }
 
 function renderKPIs(kpis) {
@@ -933,6 +938,57 @@ document.addEventListener('DOMContentLoaded', () => {
   updateProgressBar();
   updateBookingButtons();
 });
+
+// ── Actualización en vivo del Dashboard ──────────────────────
+function updateDashboardLive(appointment) {
+  // Actualizar contador Citas Hoy
+  const kpiHoy = document.getElementById('kpi-today');
+  if (kpiHoy) {
+    const current = parseInt(kpiHoy.textContent) || 0;
+    kpiHoy.textContent = current + 1;
+  }
+
+  // Insertar en tabla de Próximas Citas
+  const tbody = document.getElementById('appointments-table');
+  if (tbody) {
+    // Quitar mensaje "sin citas" si existe
+    if (tbody.innerHTML.includes('Sin citas')) tbody.innerHTML = '';
+    const statusBadge = `<span class="bg-emerald-500/10 text-emerald-400 text-[10px] px-2 py-0.5 rounded-full border border-emerald-500/20">Confirmado</span>`;
+    const barberInitial = booking.barberName ? booking.barberName[0] : '?';
+    tbody.innerHTML += `
+      <tr class="hover:bg-surface-container-high/50 transition-colors">
+        <td class="px-md py-md font-medium text-on-surface">${appointment.client_name}</td>
+        <td class="px-md py-md">${booking.serviceName}</td>
+        <td class="px-md py-md">
+          <span class="flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-primary/20 text-primary text-[10px] flex items-center justify-center font-bold">${barberInitial}</span>
+            ${booking.barberName}
+          </span>
+        </td>
+        <td class="px-md py-md">${appointment.appointment_time}</td>
+        <td class="px-md py-md">${statusBadge}</td>
+      </tr>`;
+  }
+
+  // Insertar en Agenda de Hoy
+  const timeline = document.getElementById('schedule-timeline');
+  if (timeline) {
+    if (timeline.innerHTML.includes('skeleton') || timeline.innerHTML.includes('No hay citas')) {
+      timeline.innerHTML = '';
+    }
+    timeline.innerHTML += `
+      <div class="relative pl-gutter">
+        <span class="absolute -left-16 top-0 text-[11px] text-on-surface-variant font-medium">${appointment.appointment_time}</span>
+        <div class="bg-surface-container-high/50 p-sm rounded-lg border-l-4 border-primary/50">
+          <p class="text-body-md font-bold">${booking.serviceName} · ${appointment.client_name}</p>
+          <p class="text-[10px] text-on-surface-variant">Barbero: ${booking.barberName}</p>
+        </div>
+      </div>`;
+  }
+
+  // Recargar analytics completo para actualizar ranking e ingresos
+  setTimeout(() => loadDashboard(), 1000);
+}
 
 // ── Archivar Citas ───────────────────────────────────────────
 async function archivarCitas() {
