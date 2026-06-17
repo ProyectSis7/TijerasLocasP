@@ -146,11 +146,11 @@
   <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 bg-surface/60 backdrop-blur-xl border-t border-outline-variant/30 rounded-t-xl">
     <button onclick="showScreen('screen-welcome')" class="flex flex-col items-center text-primary px-4 py-2">
       <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1">home</span>
-      <span class="text-label-caps mt-1">Home</span>
+      <span class="text-label-caps mt-1">Inicio</span>
     </button>
     <button onclick="showScreen('screen-booking'); resetBooking()" class="flex flex-col items-center text-on-surface-variant px-4 py-2 hover:text-primary transition-colors">
       <span class="material-symbols-outlined">content_cut</span>
-      <span class="text-label-caps mt-1">Book</span>
+      <span class="text-label-caps mt-1">Agendar</span>
     </button>
   </nav>
 </div>
@@ -354,12 +354,6 @@
       <a href="#" class="bg-primary text-on-primary font-bold rounded-lg mx-2 my-1 px-4 py-3 flex items-center gap-3">
         <span class="material-symbols-outlined">dashboard</span><span>Dashboard</span>
       </a>
-      <a href="#" class="text-on-surface-variant hover:bg-surface-container-high rounded-lg mx-2 my-1 px-4 py-3 flex items-center gap-3 transition-all">
-        <span class="material-symbols-outlined">event_note</span><span>Citas</span>
-      </a>
-      <a href="#" class="text-on-surface-variant hover:bg-surface-container-high rounded-lg mx-2 my-1 px-4 py-3 flex items-center gap-3 transition-all">
-        <span class="material-symbols-outlined">group</span><span>Barberos</span>
-      </a>
     </nav>
     <div class="px-md mt-auto pt-md border-t border-outline-variant/30">
       <button onclick="showScreen('screen-welcome')" class="w-full text-on-surface-variant hover:text-error flex items-center gap-3 px-4 py-2 transition-colors">
@@ -494,6 +488,9 @@
       <section class="glass-panel rounded-xl overflow-hidden mb-xl">
         <div class="px-md py-sm border-b border-outline-variant/30 flex justify-between items-center">
           <h4 class="text-body-md font-bold text-primary">Próximas Citas Confirmadas</h4>
+          <button onclick="archivarCitas()" class="text-[11px] text-on-surface-variant border border-outline-variant px-sm py-xs rounded-lg hover:border-error hover:text-error transition-colors flex items-center gap-1">
+            <span class="material-symbols-outlined text-[14px]">archive</span> Archivar
+          </button>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-left">
@@ -794,8 +791,12 @@ function setDashboardLabel() {
   if (el2) el2.textContent = label;
 }
 
+function formatCLP(amount) {
+  return '$' + Math.round(amount).toLocaleString('es-CL');
+}
+
 function renderKPIs(kpis) {
-  document.getElementById('kpi-revenue').textContent = `$${kpis.weekly_revenue.toFixed(2)}`;
+  document.getElementById('kpi-revenue').textContent = formatCLP(kpis.weekly_revenue);
   document.getElementById('kpi-revenue').classList.remove('skeleton');
   document.getElementById('kpi-revenue-sub').textContent = `Semana ${kpis.week_start} → ${kpis.week_end}`;
   document.getElementById('kpi-today').textContent = kpis.total_today;
@@ -812,7 +813,7 @@ function renderBarberRanking(ranking) {
       <div class="flex-grow">
         <div class="flex justify-between items-end mb-1">
           <span class="text-body-md font-medium">${b.name}</span>
-          <span class="text-label-caps text-primary">$${b.total_revenue} · ${b.total_appointments} CITAS</span>
+          <span class="text-label-caps text-primary">${formatCLP(b.total_revenue)} · ${b.total_appointments} CITAS</span>
         </div>
         <div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
           <div class="h-full rounded-full transition-all duration-1000" style="width:${b.revenue_pct}%;background:${colors[i]||'#474746'}"></div>
@@ -932,6 +933,24 @@ document.addEventListener('DOMContentLoaded', () => {
   updateProgressBar();
   updateBookingButtons();
 });
+
+// ── Archivar Citas ───────────────────────────────────────────
+async function archivarCitas() {
+  if (!confirm('¿Archivar todas las citas? Esto limpiará el dashboard para reiniciar la simulación.')) return;
+  try {
+    await fetch(`${API}/appointments/archive`, { method: 'POST' });
+  } catch(e) { /* silencioso */ }
+  // Refrescar dashboard mostrando todo en cero
+  document.getElementById('kpi-revenue').textContent = '$0';
+  document.getElementById('kpi-today').textContent = '0';
+  document.getElementById('kpi-gaps').textContent = '0';
+  document.getElementById('barber-ranking-list').innerHTML = '<p class="text-on-surface-variant text-sm">Sin citas esta semana.</p>';
+  document.getElementById('appointments-table').innerHTML = '<tr><td colspan="5" class="px-md py-lg text-center text-on-surface-variant">Sin citas para hoy.</td></tr>';
+  document.getElementById('schedule-timeline').innerHTML = '<p class="text-on-surface-variant text-sm ml-4 py-4">No hay citas hoy.</p>';
+  document.getElementById('donut-total').textContent = '0';
+  document.getElementById('service-legend').innerHTML = '';
+  showToast('Dashboard reiniciado correctamente');
+}
 
 // ── Admin Login ───────────────────────────────────────────────
 function showAdminLogin() {
