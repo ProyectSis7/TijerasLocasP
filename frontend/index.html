@@ -383,8 +383,8 @@
         </div>
       </div>
       <div class="flex items-center gap-md">
-        <button onclick="loadDashboard()" class="text-on-surface-variant hover:text-primary transition-colors" title="Actualizar">
-          <span class="material-symbols-outlined">refresh</span>
+        <button onclick="refreshDashboard()" class="text-on-surface-variant hover:text-primary transition-colors" title="Actualizar datos">
+          <span id="refresh-icon" class="material-symbols-outlined">refresh</span>
         </button>
         <span id="dash-today-label" class="text-label-caps text-on-surface-variant hidden md:block"></span>
       </div>
@@ -1002,6 +1002,21 @@ function updateDashboardLive(appointment) {
 
   // Recargar analytics completo para actualizar ranking e ingresos
   setTimeout(() => loadDashboard(), 1000);
+}
+
+// ── Refresh Dashboard con efecto visual ──────────────────────
+async function refreshDashboard() {
+  const icon = document.getElementById('refresh-icon');
+  // Iniciar animación de giro
+  icon.style.transition = 'transform 0.6s ease';
+  icon.style.transform = 'rotate(360deg)';
+  setTimeout(() => {
+    icon.style.transition = 'none';
+    icon.style.transform = 'rotate(0deg)';
+  }, 650);
+  // Recargar todos los datos del dashboard
+  await loadDashboard();
+  showToast('Dashboard actualizado');
 }
 
 // ── Archivar Citas ───────────────────────────────────────────
