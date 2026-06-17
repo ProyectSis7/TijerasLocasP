@@ -252,6 +252,12 @@
           class="w-full bg-surface-container border border-outline-variant rounded-xl px-md py-sm text-on-surface focus:border-primary focus:outline-none transition-colors" />
         <p class="text-[11px] text-on-surface-variant mt-1 opacity-70">Te enviaremos un recordatorio de tu cita.</p>
       </div>
+      <!-- Client Phone -->
+      <div>
+        <label class="text-label-caps font-label-caps text-on-surface-variant block mb-1">TELÉFONO <span class="text-error">*</span></label>
+        <input id="client-phone" type="tel" placeholder="+569 1234 5678"
+          class="w-full bg-surface-container border border-outline-variant rounded-xl px-md py-sm text-on-surface focus:border-primary focus:outline-none transition-colors" />
+      </div>
     </section>
 
   </main>
@@ -622,6 +628,11 @@ async function loadBarbers() {
       'Marcos': 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&q=80',
       'Diego':  'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&q=80',
     };
+    const roles = {
+      'Andrés': 'Especialista en Cortes Clásicos',
+      'Marcos': 'Especialista en Degradados',
+      'Diego':  'Tendencias y Diseño',
+    };
     const initials = name => name[0].toUpperCase();
     document.getElementById('barbers-list').innerHTML = barbers.map(b => `
       <div class="barber-card flex flex-col items-center gap-2 cursor-pointer group" data-id="${b.id}" data-name="${b.name}" onclick="selectBarber(this)">
@@ -629,7 +640,7 @@ async function loadBarbers() {
           <img src="${photos[b.name] || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80'}" alt="${b.name}" class="w-full h-full object-cover" />
         </div>
         <span class="font-headline-md text-sm text-on-surface">${b.name}</span>
-        <span class="text-xs text-on-surface-variant">${b.role}</span>
+        <span class="text-xs text-on-surface-variant text-center">${roles[b.name] || b.role}</span>
       </div>`).join('');
   } catch {/* silencioso */}
 }
@@ -721,7 +732,9 @@ async function submitAppointment() {
 
   const clientName = document.getElementById('client-name').value.trim();
   const clientEmail = document.getElementById('client-email').value.trim();
+  const clientPhone = document.getElementById('client-phone').value.trim();
   if (!clientName) return showToast('Escribe tu nombre');
+  if (!clientPhone) return showToast('Ingresa tu número de teléfono');
 
   // Forzar fecha de hoy para que el dashboard muestre datos en tiempo real
   const todayStr = new Date().toISOString().split('T')[0];
