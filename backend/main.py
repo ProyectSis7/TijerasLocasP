@@ -31,9 +31,9 @@ async def startup_db():
                 await db.execute("INSERT INTO barbers (name,role) VALUES ('Diego','Style Expert')")
         async with db.execute("SELECT COUNT(*) as c FROM services") as cur:
             if (await cur.fetchone())["c"] == 0:
-                await db.execute("INSERT INTO services (name,description,price,duration_min) VALUES ('Corte de pelo','Corte clásico o moderno.',20000,30)")
-                await db.execute("INSERT INTO services (name,description,price,duration_min) VALUES ('Barba','Perfilado y toalla caliente.',15000,20)")
-                await db.execute("INSERT INTO services (name,description,price,duration_min) VALUES ('Combo','Corte y barba premium.',30000,50)")
+                await db.execute("INSERT INTO services (name,description,price,duration_min) VALUES ('Corte de pelo','Corte clásico o moderno.',20.00,30)")
+                await db.execute("INSERT INTO services (name,description,price,duration_min) VALUES ('Barba','Perfilado y toalla caliente.',15.00,20)")
+                await db.execute("INSERT INTO services (name,description,price,duration_min) VALUES ('Combo','Corte y barba premium.',30.00,50)")
         async with db.execute("SELECT COUNT(*) as c FROM appointments") as cur:
             if (await cur.fetchone())["c"] == 0:
                 today = date.today()
@@ -45,7 +45,7 @@ async def startup_db():
                     ("Pedro Martínez",1,2,(today-timedelta(days=3)).isoformat(),"09:30","confirmed"),
                     ("Juan García",2,3,(today-timedelta(days=2)).isoformat(),"15:00","confirmed"),
                     ("Miguel Ruiz",3,1,(today-timedelta(days=1)).isoformat(),"11:00","confirmed"),
-                    ("Marcelo Díaz",2,1,today.isoformat(),"10:30","confirmed"),
+                    ("Sofía Díaz",2,2,today.isoformat(),"10:30","confirmed"),
                     ("Pablo Fernández",1,1,today.isoformat(),"17:30","pending"),
                 ]
                 for c in citas:
@@ -137,3 +137,10 @@ async def get_analytics(db: aiosqlite.Connection = Depends(get_db)):
 async def list_appointments(db: aiosqlite.Connection = Depends(get_db)):
     async with db.execute("SELECT * FROM appointments ORDER BY appointment_date,appointment_time") as cur:
         return [dict(r) for r in await cur.fetchall()]
+
+@app.post("/appointments/archive", status_code=200)
+async def archive_appointments(db: aiosqlite.Connection = Depends(get_db)):
+    """Elimina todas las citas para reiniciar la simulación del dashboard."""
+    await db.execute("DELETE FROM appointments")
+    await db.commit()
+    return {"message": "Todas las citas han sido archivadas"}
