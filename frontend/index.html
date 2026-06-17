@@ -594,7 +594,7 @@ async function loadServices() {
           <div>
             <h3 class="font-headline-md text-lg text-primary">${s.name}</h3>
             <p class="text-on-surface-variant text-sm mt-1">${s.description || ''}</p>
-            <p class="text-on-surface font-bold mt-2 text-lg">${new Intl.NumberFormat('es-CL').format(s.price)}</p>
+            <p class="text-on-surface font-bold mt-2 text-lg">${formatCLP(s.price)}</p>
           </div>
           <span class="material-symbols-outlined text-primary-container group-hover:scale-110 transition-transform">${icons[s.id] || 'content_cut'}</span>
         </div>
@@ -797,7 +797,8 @@ function setDashboardLabel() {
 }
 
 function formatCLP(amount) {
-  return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits: 0 }).format(Math.round(amount));
+  const value = amount < 1000 ? amount * 1000 : amount;
+  return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits: 0 }).format(Math.round(value));
 }
 
 function renderKPIs(kpis) {
